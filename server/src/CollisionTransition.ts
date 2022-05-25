@@ -1,6 +1,8 @@
-import Character from "./Character";
-import { ResolvedCollisionEvent } from "./CharacterDataInterfaces";
+import Character from './Character';
+import { ResolvedCollisionEvent } from './CharacterDataInterfaces';
 
-export default interface CollisionTransition {
+interface CollisionTransition {
   handleCollision: (collisionEvent: ResolvedCollisionEvent, character: Character) => void;
 }
+
+export default CollisionTransition;

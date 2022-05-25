@@ -1,8 +1,10 @@
-import { CollisionProperty, CollisionRectangle, FileCollisionItem } from "./CharacterFileInterface";
+import { CollisionProperty, CollisionRectangle, FileCollisionItem } from './CharacterFileInterface';
 
-export class CollisionEntity {
-  #collisionProperties: Map<string, string>
-  #collisionRectangles: CollisionRectangle[]
+export default class CollisionEntity {
+  #collisionProperties: Map<string, string>;
+
+  #collisionRectangles: CollisionRectangle[];
+
   #entityType: string;
 
   constructor(
@@ -32,13 +34,13 @@ export class CollisionEntity {
     this.#collisionProperties.forEach((propertyValue, propertyName) => {
       returnedProperties.push({
         propertyName,
-        propertyValue
-      })
-    })
+        propertyValue,
+      });
+    });
     return {
       entityType: this.#entityType,
       properties: returnedProperties,
-      rectangles: this.#collisionRectangles
-    }
+      rectangles: this.#collisionRectangles,
+    };
   }
 }

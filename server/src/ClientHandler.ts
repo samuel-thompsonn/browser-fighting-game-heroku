@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
-import { ControlsChange, Position } from './AnimationUtil';
+import { ControlsChange } from './AnimationUtil';
 import { CharacterStatus } from './CharacterDataInterfaces';
-import { AnimationState } from './CharacterFileInterface';
 import CharacterListener from './CharacterListener';
 import GameModel from './GameModel';
 

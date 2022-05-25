@@ -1,6 +1,6 @@
-import { Position } from "./AnimationUtil";
+import { Position } from './AnimationUtil';
 
-export default interface CharacterInternal {
+interface CharacterInternal {
   getCurrentHealth: () => number;
   setCurrentHealth: (newValue: number) => void;
   getPosition: () => Position;
@@ -8,4 +8,6 @@ export default interface CharacterInternal {
   changePosition: (deltaPosition: Position) => void;
   setNextState: (stateID: string) => void;
   getKnockbackStrength: () => number;
-};
+}
+
+export default CharacterInternal;

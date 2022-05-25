@@ -17,8 +17,8 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: 'https://browser-fighting-game-client.herokuapp.com',
-    methods: ["GET", "POST"],
-    credentials: true
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
@@ -61,17 +61,17 @@ io.on('connection', (socket) => {
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 app.get('*', (req, res) => {
-  logVerbose("Received an HTTP GET request for a page!")
+  logVerbose('Received an HTTP GET request for a page!');
   res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
 
-let ellipsisCount = 1;
-const maxEllipsis = 3;
+// let ellipsisCount = 1;
+// const maxEllipsis = 3;
 // We can use the return value of setInterval() to get
 // an interval object which we can reference later to pause or modify
 // the game loop's pacing
 setInterval(() => {
-  ellipsisCount %= (maxEllipsis + 1);
+  // ellipsisCount %= (maxEllipsis + 1);
   // const ellipsis = '.'.repeat(ellipsisCount) + ' '.repeat(maxEllipsis - ellipsisCount);
   // process.stdout.write(`\rUpdating all characters${ellipsis}`);
   // ellipsisCount += 1;

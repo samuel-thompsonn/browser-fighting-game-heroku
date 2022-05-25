@@ -4,9 +4,7 @@ import {
   TransitionInfo,
 } from './AnimationUtil';
 import {
-  CharacterFileData,
   AnimationState,
-  FileAnimationState,
   FileCollisionItem,
   CharacterDimensions,
 } from './CharacterFileInterface';
@@ -18,7 +16,6 @@ import GameInternal from './GameInternal';
 import CharacterInternal from './CharacterInternal';
 
 const CHARACTER_SIZE = 64;
-
 
 export default class Character implements CharacterInternal {
   #animationStates: Map<string, AnimationState>;
@@ -61,20 +58,20 @@ export default class Character implements CharacterInternal {
   ) {
     this.#deltaPosition = {
       x: 0,
-      y: 0
+      y: 0,
     };
     this.#knockbackStrength = knockbackStrength;
     this.#nextStateID = undefined;
     this.#dimensions = {
       width: CHARACTER_SIZE,
       height: CHARACTER_SIZE,
-    }
+    };
     this.#controlsMap = new Map<string, boolean>();
     this.#listeners = [];
     this.#characterID = characterID;
     this.#healthInfo = {
       health: maxHealth,
-      maxHealth: maxHealth,
+      maxHealth,
     };
     this.#position = startPosition;
     this.#movementSpeed = movementSpeed;
@@ -106,8 +103,8 @@ export default class Character implements CharacterInternal {
   changePosition(deltaPosition: Position): void {
     this.#deltaPosition = {
       x: this.#deltaPosition.x + deltaPosition.x,
-      y: this.#deltaPosition.y + deltaPosition.y
-    }
+      y: this.#deltaPosition.y + deltaPosition.y,
+    };
   }
 
   updateControls({ control, status }: ControlsChange): void {
@@ -136,19 +133,9 @@ export default class Character implements CharacterInternal {
   #consumeCollision(collision: ResolvedCollisionEvent): void {
     this.#currentState.transitions.collisions.forEach((collisionTransition) => {
       collisionTransition.handleCollision(collision, this);
-    })
+    });
   }
 
-  // perform the appropriate state transition given the relevant info
-  // examples of relevant info:
-  //   - colliding
-  //     - with the ground
-  //     - with the wall
-  //     - with a hitbox
-  //   - control inputs
-  //     - jumping
-  //     - moving left or right
-  //     - attacking
   updateSelf(
     gameInterface: GameInternal,
     relevantInfo: TransitionInfo,
@@ -159,15 +146,15 @@ export default class Character implements CharacterInternal {
         const movementAmount = this.#currentState.effects.move;
         this.changePosition({
           x: movementAmount.x * this.#movementSpeed * elapsedSeconds,
-          y: movementAmount.y * this.#movementSpeed * elapsedSeconds
+          y: movementAmount.y * this.#movementSpeed * elapsedSeconds,
         });
       }
     }
     gameInterface.moveCharacter(this, this.#deltaPosition);
     this.#deltaPosition = {
       x: 0,
-      y: 0
-    }
+      y: 0,
+    };
     this.#nextStateID = this.#currentState.transitions.default;
     controlsLabels.forEach((controlID) => {
       if (this.#controlsMap.get(controlID) === true) {
@@ -209,10 +196,10 @@ export default class Character implements CharacterInternal {
     if (collisionEvent.secondEntity.characterID === this.#characterID) {
       selfEntity = collisionEvent.secondEntity;
       otherEntity = collisionEvent.firstEntity;
-    };
+    }
     return {
       selfEntity,
-      otherEntity
+      otherEntity,
     };
   }
 
@@ -221,13 +208,13 @@ export default class Character implements CharacterInternal {
     this.#currentCollision = {
       selfEntity: {
         type: selfEntity.collisionEntity.getEntityType(),
-        entity: selfEntity.collisionEntity
+        entity: selfEntity.collisionEntity,
       },
       otherEntity: {
         type: otherEntity.collisionEntity.getEntityType(),
-        entity: otherEntity.collisionEntity
-      }
-    }
+        entity: otherEntity.collisionEntity,
+      },
+    };
   }
 
   /**

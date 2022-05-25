@@ -1,42 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
-import "./Canvas.css";
-import "./Visualizer";
+import React, { useEffect, useRef } from 'react';
+import './Canvas.css';
 import Visualizer from './Visualizer';
 
 interface CanvasProps {
   visualizers: Map<string, Visualizer>;
-};
+}
 
-const Canvas = ({ visualizers }:CanvasProps) => {
+function Canvas({ visualizers }:CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas === null) { return; }
+    if (canvas === null) { return undefined; }
     const canvasContext = canvas.getContext('2d');
-    if (canvasContext === null) { return; }
-    
+    if (canvasContext === null) { return undefined; }
+
     let animationFrameId:number;
 
     // const image = imageRef.current;
     const image = new Image();
-    if (image === null) { return; }
+    if (image === null) { return undefined; }
     image.onload = () => {
       // canvasContext.drawImage(image, 50, 20);
     };
     image.onerror = () => {
-      alert('no image found with that url.')
-    }
+      // alert('no image found with that url.');
+    };
 
     const draw = (
-      canvasContext: CanvasRenderingContext2D,
-    ) => {        
-      canvasContext!.fillStyle = `#000000`;
-      const width = canvasContext.canvas.width;
-      const height = canvasContext.canvas.height;
-      canvasContext.clearRect(0, 0, width, height);
+      canvasContextInstance: CanvasRenderingContext2D,
+    ) => {
+      // eslint-disable-next-line no-param-reassign
+      canvasContextInstance!.fillStyle = '#000000';
+      const { width } = canvasContextInstance.canvas;
+      const { height } = canvasContextInstance.canvas;
+      canvasContextInstance.clearRect(0, 0, width, height);
       visualizers.forEach((visualizer) => {
-        visualizer.drawSelf(canvasContext);
+        visualizer.drawSelf(canvasContextInstance);
       });
     };
 
@@ -48,13 +48,12 @@ const Canvas = ({ visualizers }:CanvasProps) => {
 
     return () => {
       window.cancelAnimationFrame(animationFrameId);
-    }
-    
+    };
   });
 
   return (
     <div>
-      <canvas ref={canvasRef}/>
+      <canvas ref={canvasRef} />
     </div>
   );
 }

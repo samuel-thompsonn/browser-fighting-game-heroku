@@ -1,11 +1,13 @@
-import { TransitionEffectDescription } from "../CharacterFileInterface";
-import TransitionEffect from "./TransitionEffect";
-import effectTypes from "./effectTypes.json";
-import * as effectClasses from "./EffectLibrary";
+import { TransitionEffectDescription } from '../CharacterFileInterface';
+import TransitionEffect from './TransitionEffect';
+import effectTypes from './effectTypes.json';
+import * as effectClasses from './EffectLibrary';
 
 export default class TransitionEffectFactory {
-  static instantiateTransitionEffect(description: TransitionEffectDescription): TransitionEffect | undefined {
-    let effectClassName: string | undefined = undefined;
+  static instantiateTransitionEffect(
+    description: TransitionEffectDescription,
+  ): TransitionEffect | undefined {
+    let effectClassName: string | undefined;
     effectTypes.forEach((effectEntry) => {
       if (effectEntry.nickname === description.effectType) {
         effectClassName = effectEntry.className;
@@ -17,6 +19,7 @@ export default class TransitionEffectFactory {
       // effectClassName, which is itself an es6 module. So then we take
       // its default export, which is a class definition, and take that class
       // definition's constructor and call it.
+      // eslint-disable-next-line
       const effectClass = (<any>effectClasses)[effectClassName].default.prototype.constructor;
       return Reflect.construct(effectClass, []);
     }

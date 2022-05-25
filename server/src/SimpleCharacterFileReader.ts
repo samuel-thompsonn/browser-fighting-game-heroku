@@ -5,17 +5,15 @@ import {
   AnimationState,
   FileAnimationDescription,
   SimpleCharacterFileData,
-  CharacterFileData,
-  FileAnimationState,
   ControlsTransition,
   FileCollisionItem,
   CollisionTransitionDescription,
 } from './CharacterFileInterface';
-import { CollisionEntity } from './CollisionEntity';
+import CollisionEntity from './CollisionEntity';
 import CollisionTransition from './CollisionTransition';
 
 function getAnimationStateID(animationName: string, orderIndex: number) {
-  return `${animationName}${orderIndex+1}`;
+  return `${animationName}${orderIndex + 1}`;
 }
 
 function defaultNextStateInterrupt(
@@ -52,7 +50,7 @@ function resolveDefaultNextAnimation(
   defaultNextStateInfo: {
     destination: string;
     transitionType: string;
-  }
+  },
 ): string {
   if (defaultNextStateInfo.transitionType === 'interrupt') {
     return defaultNextStateInterrupt(
@@ -62,13 +60,13 @@ function resolveDefaultNextAnimation(
       defaultNextStateInfo.destination,
     );
   }
-  else if (defaultNextStateInfo.transitionType === 'afterEnd') {
+  if (defaultNextStateInfo.transitionType === 'afterEnd') {
     return defaultNextStateAfterEnd(
       currentStateID,
       currentStateIndex,
       currentStateNumFrames,
       defaultNextStateInfo.destination,
-    )
+    );
   }
   return getAnimationStateID(defaultNextStateInfo.destination, 0);
 }
@@ -77,17 +75,17 @@ function resolveDestinationStateID(
   currentStateID: string,
   currentStateIndex: number,
   currentStateNumFrames: number,
-  destinationStateID: string
+  destinationStateID: string,
 ): string {
   if (currentStateID === destinationStateID) {
     return getAnimationStateID(currentStateID, (currentStateIndex + 1) % currentStateNumFrames);
   }
-  return getAnimationStateID(destinationStateID, 0)
+  return getAnimationStateID(destinationStateID, 0);
 }
 
 function getStateControlsTransitions(
   animationDescription: FileAnimationDescription,
-  stateIndex: number
+  stateIndex: number,
 ): Map<string, string> {
   const fileDescription = animationDescription.state.transitions.controls;
   if (!fileDescription) {
@@ -99,9 +97,11 @@ function getStateControlsTransitions(
       controlsTransition.control,
       resolveDestinationStateID(
         animationDescription.id,
-        stateIndex, animationDescription.numFrames,
-        controlsTransition.destination
-      )
+        stateIndex,
+
+        animationDescription.numFrames,
+        controlsTransition.destination,
+      ),
     );
   });
   return returnedTransitions;
@@ -118,16 +118,18 @@ function loadCollisionEntities(collisionData: FileCollisionItem[]): CollisionEnt
       collisionEntityData.entityType,
       collisionProperties,
       collisionEntityData.rectangles,
-    ))
+    ));
   });
   return collisionEntities;
 }
 
-function getStateCollisionTransitions(collisionTransitionData: CollisionTransitionDescription[]): CollisionTransition[] {
+function getStateCollisionTransitions(
+  collisionTransitionData: CollisionTransitionDescription[],
+): CollisionTransition[] {
   const collisionTransitions: CollisionTransition[] = [];
   collisionTransitionData.forEach((transitionDescription) => {
-    collisionTransitions.push(new BasicCollisionTransition(transitionDescription))
-  })
+    collisionTransitions.push(new BasicCollisionTransition(transitionDescription));
+  });
   return collisionTransitions;
 }
 
@@ -146,7 +148,7 @@ function getAnimationStates(animationDescription: FileAnimationDescription): Ani
       i,
     );
 
-    let stateCollisions = undefined;
+    let stateCollisions;
     if (animationDescription.state.collisions) {
       stateCollisions = loadCollisionEntities(animationDescription.state.collisions);
     }
@@ -156,7 +158,7 @@ function getAnimationStates(animationDescription: FileAnimationDescription): Ani
     if (stateCollisionDescriptions) {
       stateCollisionTransitions = getStateCollisionTransitions(stateCollisionDescriptions);
     }
-    
+
     generatedStates.push({
       id,
       transitions: {

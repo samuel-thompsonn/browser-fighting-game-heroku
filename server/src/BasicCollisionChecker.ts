@@ -1,6 +1,6 @@
 import Character from './Character';
 import { CollisionRectangle } from './CharacterFileInterface';
-import { CollisionEntity } from './CollisionEntity';
+import CollisionEntity from './CollisionEntity';
 import { CollisionEvent } from './GameInterfaces';
 
 interface Interval {
@@ -33,20 +33,24 @@ function boxesColliding(firstBox: CollisionRectangle, secondBox: CollisionRectan
 // dimensions and position. For example, a rectangle with x,y of 0,0
 // and width,height of 1,1 has the same position as the character and
 // the same width and heigh as the character.
-function resolveCollisionRectangle(character: Character, collisionRectangle: CollisionRectangle): CollisionRectangle {
+function resolveCollisionRectangle(
+  character: Character,
+  collisionRectangle: CollisionRectangle,
+): CollisionRectangle {
   return {
     x: character.getPosition().x + (collisionRectangle.x * character.getDimensions().width),
     y: character.getPosition().y + (collisionRectangle.y * character.getDimensions().height),
     width: character.getDimensions().width * collisionRectangle.width,
     height: character.getDimensions().height * collisionRectangle.height,
-  }
+  };
 }
 
 function entitiesColliding(
   firstCharacter: Character,
   firstEntity: CollisionEntity,
   secondCharacter: Character,
-  secondEntity: CollisionEntity): boolean {
+  secondEntity: CollisionEntity,
+): boolean {
   // The current collision code, doesn't actually take into account the positions
   // of the entities! We need to convert the boxes based on the positions and
   // dimensions of the entities.
@@ -55,7 +59,7 @@ function entitiesColliding(
     secondEntity.getCollisionRectangles().forEach((secondRectangle) => {
       colliding = colliding || boxesColliding(
         resolveCollisionRectangle(firstCharacter, firstRectangle),
-        resolveCollisionRectangle(secondCharacter, secondRectangle)
+        resolveCollisionRectangle(secondCharacter, secondRectangle),
       );
     });
   });
@@ -76,7 +80,8 @@ export default class BasicCollisionChecker {
           firstCharacter,
           firstCharacterEntity,
           secondCharacter,
-          secondCharacterEntity)) {
+          secondCharacterEntity,
+        )) {
           detectedCollision = {
             firstEntity: {
               characterID: firstCharacter.getCharacterID(),
@@ -85,7 +90,7 @@ export default class BasicCollisionChecker {
             secondEntity: {
               characterID: secondCharacter.getCharacterID(),
               collisionEntity: secondCharacterEntity,
-            }
+            },
           };
         }
       });

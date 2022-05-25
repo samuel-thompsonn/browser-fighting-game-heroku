@@ -1,5 +1,4 @@
-import { CollisionRectangle, HitboxRectangle } from './CharacterFileInterface';
-import { CollisionEntity } from './CollisionEntity';
+import CollisionEntity from './CollisionEntity';
 
 interface CollisionMember {
     characterID: string;

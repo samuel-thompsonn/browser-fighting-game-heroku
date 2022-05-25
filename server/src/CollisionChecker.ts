@@ -1,5 +1,5 @@
 import { CollisionEvent } from './GameInterfaces';
-import { CollisionEntity } from './CollisionEntity';
+import CollisionEntity from './CollisionEntity';
 
 export default abstract class CollisionChecker {
   abstract hasCollision(

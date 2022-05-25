@@ -6,6 +6,16 @@ import characterASimple from './character_files/characterASimple.json';
 import GameInternal from './GameInternal';
 import SimpleCharacterFileReader from './SimpleCharacterFileReader';
 
+function applyCharacterMovement(deltaPositions: Map<Character, Position>): void {
+  deltaPositions.forEach((deltaPosition: Position, character: Character) => {
+    const currentPosition = character.getPosition();
+    character.setPosition({
+      x: currentPosition.x + deltaPosition.x,
+      y: currentPosition.y + deltaPosition.y,
+    });
+  });
+}
+
 export default class GameModel implements GameInternal {
   #characters: Map<string, Character>;
 
@@ -43,13 +53,13 @@ export default class GameModel implements GameInternal {
   createCharacter(): string {
     const characterID = `${this.#characterCounter}`;
     // const ReferenceNewCharacter = new Character(characterA, { x: 100, y: 50 }, characterID);
-    const newCharacter = SimpleCharacterFileReader.readCharacterFile(characterASimple, characterID)
+    const newCharacter = SimpleCharacterFileReader.readCharacterFile(characterASimple, characterID);
     this.#characterListeners.forEach((listener) => {
       newCharacter.subscribe(listener);
     });
     this.#characters.set(characterID, newCharacter);
     this.#characterCounter += 1;
-    console.log(`There are now ${this.#characters.size} characters.`);
+    console.log(`There are now ${this.#characters.size} characters.`); // eslint-disable-line
     return characterID;
   }
 
@@ -58,7 +68,7 @@ export default class GameModel implements GameInternal {
     this.#characterListeners.forEach((listener) => {
       listener.handleCharacterDeleted(characterID);
     });
-    console.log(`There are now ${this.#characters.size} characters.`);
+    console.log(`There are now ${this.#characters.size} characters.`); // eslint-disable-line
   }
 
   moveCharacterLeft(characterID: string) {
@@ -132,19 +142,9 @@ export default class GameModel implements GameInternal {
         if (!detectedCollision) {
           return;
         }
-        console.log(`Collision between character ${detectedCollision.firstEntity.characterID} and ${detectedCollision.secondEntity.characterID} `);
+        console.log(`Collision between character ${detectedCollision.firstEntity.characterID} and ${detectedCollision.secondEntity.characterID} `); // eslint-disable-line
         innerCharacter.registerCollision(detectedCollision);
         outerCharacter.registerCollision(detectedCollision);
-      });
-    });
-  }
-
-  applyCharacterMovement(deltaPositions: Map<Character, Position>): void {
-    deltaPositions.forEach((deltaPosition: Position, character: Character) => {
-      const currentPosition = character.getPosition();
-      character.setPosition({
-        x: currentPosition.x + deltaPosition.x,
-        y: currentPosition.y + deltaPosition.y,
       });
     });
   }
@@ -153,6 +153,6 @@ export default class GameModel implements GameInternal {
     this.updateCharacters(elapsedSeconds);
     const deltaPositions = this.getCharacterPositionChanges();
     this.registerCollisions(deltaPositions);
-    this.applyCharacterMovement(deltaPositions);
+    applyCharacterMovement(deltaPositions);
   }
 }

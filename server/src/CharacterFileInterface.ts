@@ -1,5 +1,5 @@
-import { CollisionEntity } from "./CollisionEntity";
-import CollisionTransition from "./CollisionTransition";
+import CollisionEntity from './CollisionEntity';
+import CollisionTransition from './CollisionTransition';
 
 export interface CharacterDimensions {
   width: number;
@@ -53,6 +53,18 @@ export interface ControlsTransition {
   destination: string;
 }
 
+export interface TransitionEffectDescription {
+  effectType: string;
+  argumentLabels: string[];
+}
+
+export interface CollisionTransitionDescription {
+  foreignEntityType: string;
+  selfEntityType: string;
+  destination: string;
+  effects: TransitionEffectDescription[];
+}
+
 export interface FileAnimationState {
   id: string;
   transitions: {
@@ -83,18 +95,6 @@ export interface CharacterFileData {
       name: string;
       states: FileAnimationState[];
   }[]
-}
-
-export interface TransitionEffectDescription {
-  effectType: string;
-  argumentLabels: string[];
-}
-
-export interface CollisionTransitionDescription {
-  foreignEntityType: string;
-  selfEntityType: string;
-  destination: string;
-  effects: TransitionEffectDescription[];
 }
 
 export interface FileAnimationDescription {
