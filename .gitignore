@@ -3,3 +3,4 @@
 build
 client/build
 .eslintrc.json
+.vscode
