@@ -8,6 +8,7 @@ import {
   ControlsTransition,
   FileCollisionItem,
   CollisionTransitionDescription,
+  StateInteractionDescription,
 } from './CharacterFileInterface';
 import CollisionEntity from './CollisionEntity';
 import CollisionTransition from './CollisionTransition';
@@ -136,8 +137,21 @@ function getStateCollisionTransitions(
 
 function getStateInteractions(
   animationDescription: FileAnimationDescription,
+  globalInteractionsMap: Map<string, StateInteractionDescription>,
 ): StateInteraction[] {
   const interactions:StateInteraction[] = [];
+  if (animationDescription.state.importedInteractions) {
+    animationDescription.state.importedInteractions.forEach((importedInteraction) => {
+      const interactionDescription = globalInteractionsMap.get(importedInteraction.id);
+      if (interactionDescription) {
+        interactions.push(new StateInteraction(
+          { ...interactionDescription, priority: importedInteraction.priority },
+        ));
+      } else {
+        throw new Error(`Reference to undefined global interaction ${importedInteraction.id}`);
+      }
+    });
+  }
   if (animationDescription.state.interactions) {
     animationDescription.state.interactions.forEach((interactionDescription) => {
       interactions.push(new StateInteraction(interactionDescription));
@@ -147,9 +161,22 @@ function getStateInteractions(
   return interactions;
 }
 
+function getGlobalInteractionsMap(
+  globalInteractions: StateInteractionDescription[],
+): Map<string, StateInteractionDescription> {
+  const returnedMap = new Map<string, StateInteractionDescription>();
+  globalInteractions.forEach((interactionDescription) => {
+    if (interactionDescription.id) {
+      returnedMap.set(interactionDescription.id, interactionDescription);
+    }
+  });
+  return returnedMap;
+}
+
 function getAnimationState(
   animationDescription: FileAnimationDescription,
   frameIndex: number,
+  globalInteractionsMap: Map<string, StateInteractionDescription>,
 ): AnimationState {
   const id = getAnimationStateID(animationDescription.id, frameIndex);
   const defaultNextState = resolveDefaultNextAnimation(
@@ -174,6 +201,8 @@ function getAnimationState(
     stateCollisionTransitions = getStateCollisionTransitions(stateCollisionDescriptions);
   }
 
+  const stateInteractions = getStateInteractions(animationDescription, globalInteractionsMap);
+
   return {
     id,
     frameInfo: {
@@ -181,7 +210,7 @@ function getAnimationState(
       numFrames: animationDescription.numFrames,
       stateID: animationDescription.id,
     },
-    interactions: getStateInteractions(animationDescription),
+    interactions: stateInteractions,
     transitions: {
       default: defaultNextState,
       controls: controlsTransitions,
@@ -192,10 +221,13 @@ function getAnimationState(
   };
 }
 
-function getAnimationStates(animationDescription: FileAnimationDescription): AnimationState[] {
+function getAnimationStates(
+  animationDescription: FileAnimationDescription,
+  globalInteractionsMap: Map<string, StateInteractionDescription>,
+): AnimationState[] {
   const generatedStates:AnimationState[] = [];
   for (let i = 0; i < animationDescription.numFrames; i += 1) {
-    generatedStates.push(getAnimationState(animationDescription, i));
+    generatedStates.push(getAnimationState(animationDescription, i, globalInteractionsMap));
   }
   return generatedStates;
 }
@@ -209,10 +241,13 @@ function getAnimationStates(animationDescription: FileAnimationDescription): Ani
  * they represent. If the description of an animation has name X, then the states
  * will be given names X1, X2, ....
  */
-function getAnimationGraph(characterData: FileAnimationDescription[]): Map<string, AnimationState> {
+function getAnimationGraph(
+  characterData: FileAnimationDescription[],
+  globalInteractionsMap: Map<string, StateInteractionDescription>,
+): Map<string, AnimationState> {
   const animationMap = new Map<string, AnimationState>();
   characterData.forEach((animationDescription) => {
-    const generatedStates = getAnimationStates(animationDescription);
+    const generatedStates = getAnimationStates(animationDescription, globalInteractionsMap);
     generatedStates.forEach((generatedState) => {
       animationMap.set(generatedState.id, generatedState);
     });
@@ -225,7 +260,8 @@ function getAnimationGraph(characterData: FileAnimationDescription[]): Map<strin
  */
 export default class SimpleCharacterFileReader {
   static readCharacterFile(characterData: SimpleCharacterFileData, characterID: string): Character {
-    const animationGraph = getAnimationGraph(characterData.animations);
+    const globalInteractionsMap = getGlobalInteractionsMap(characterData.interactions);
+    const animationGraph = getAnimationGraph(characterData.animations, globalInteractionsMap);
     const startPositon:Position = {
       x: 50,
       y: 0,

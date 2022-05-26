@@ -2,5 +2,9 @@
   {
     "nickname": "setNextState",
     "className": "NextStateEffect"
+  },
+  {
+    "nickname": "knockback",
+    "className": "KnockbackEffect"
   }
 ]

@@ -89,9 +89,15 @@ export interface InteractionEffectDescription {
 
 export interface StateInteractionDescription {
   name: string;
+  id?: string;
   priority: number;
   conditions: InteractionConditionDescription[];
   effects: InteractionEffectDescription[];
+}
+
+export interface ImportedInteractionDescription {
+  id: string;
+  priority: number;
 }
 
 export interface FileAnimationDescription {
@@ -99,6 +105,7 @@ export interface FileAnimationDescription {
   id: string;
   numFrames: number;
   state: {
+    importedInteractions?: ImportedInteractionDescription[];
     interactions?: StateInteractionDescription[];
     transitions: {
       default: {
@@ -125,6 +132,7 @@ export interface SimpleCharacterFileData {
     movementSpeed: number; // Units per second
     maxHealth: number;
     knockbackStrength: number;
-  }
+  },
+  interactions: StateInteractionDescription[];
   animations: FileAnimationDescription[];
 }

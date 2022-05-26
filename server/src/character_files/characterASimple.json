@@ -6,33 +6,42 @@
     "maxHealth": 100,
     "knockbackStrength": 50
   },
+  "interactions": [
+    {
+      "name": "default to idle after this animation finishes",
+      "id": "defaultToIdle",
+      "priority": 1,
+      "conditions": [],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "idle"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "afterEnd"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "animations": [
     {
       "name": "idle facing left",
       "id": "idle",
       "numFrames": 60,
       "state": {
-        "interactions": [
+        "importedInteractions": [
           {
-            "name": "default",
-            "priority": 1,
-            "conditions": [],
-            "effects": [
-              {
-                "effectType": "setNextState",
-                "args": [
-                  {
-                    "argName": "destination",
-                    "value": "idle"
-                  },
-                  {
-                    "argName": "resolutionType",
-                    "value": "afterEnd"
-                  }
-                ]
-              }
-            ]
-          },
+            "id": "defaultToIdle",
+            "priority": 1
+          }
+        ],
+        "interactions": [
           {
             "name": "move left",
             "priority": 25,
@@ -92,6 +101,16 @@
                   {
                     "argName": "resolutionType",
                     "value": "interrupt"
+                  }
+                ]
+              },
+              {
+                "effectType": "knockback",
+                "args": [
+                  {
+                    "argName": "knockback",
+                    "value": "knockback",
+                    "valueType": "fromContext"
                   }
                 ]
               }

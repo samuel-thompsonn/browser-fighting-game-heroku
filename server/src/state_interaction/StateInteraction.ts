@@ -50,7 +50,9 @@ export default class StateInteraction {
 
   #priority: number;
 
-  constructor(description: StateInteractionDescription) {
+  constructor(
+    description: StateInteractionDescription,
+  ) {
     this.#conditions = loadConditions(description.conditions);
     this.#effects = loadEffects(description.effects);
     this.#priority = description.priority;

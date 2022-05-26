@@ -22,3 +22,8 @@ re implement the constructor code for grabbing features from the given
 parameter map. Instead make it an abstract class with access to methods
 for grabbing info straight from the map. Then make things data driven
 somehow? ehh maybe not.
+- make it so that interaction effects can have their arguments interpreted
+either as literals or as keys into the context (library) that is
+handed to them.
+- allow interchanging character files by having the character files
+get sent in through a POST endpoint
