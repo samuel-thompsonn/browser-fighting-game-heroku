@@ -11,6 +11,7 @@ import {
 } from './CharacterFileInterface';
 import CollisionEntity from './CollisionEntity';
 import CollisionTransition from './CollisionTransition';
+import StateInteraction from './state_interaction/StateInteraction';
 
 function getAnimationStateID(animationName: string, orderIndex: number) {
   return `${animationName}${orderIndex + 1}`;
@@ -133,42 +134,68 @@ function getStateCollisionTransitions(
   return collisionTransitions;
 }
 
+function getStateInteractions(
+  animationDescription: FileAnimationDescription,
+): StateInteraction[] {
+  const interactions:StateInteraction[] = [];
+  if (animationDescription.state.interactions) {
+    animationDescription.state.interactions.forEach((interactionDescription) => {
+      interactions.push(new StateInteraction(interactionDescription));
+    });
+  }
+  interactions.sort((a, b) => a.getPriority() - b.getPriority());
+  return interactions;
+}
+
+function getAnimationState(
+  animationDescription: FileAnimationDescription,
+  frameIndex: number,
+): AnimationState {
+  const id = getAnimationStateID(animationDescription.id, frameIndex);
+  const defaultNextState = resolveDefaultNextAnimation(
+    animationDescription.id,
+    frameIndex,
+    animationDescription.numFrames,
+    animationDescription.state.transitions.default,
+  );
+  const controlsTransitions = getStateControlsTransitions(
+    animationDescription,
+    frameIndex,
+  );
+
+  let stateCollisions;
+  if (animationDescription.state.collisions) {
+    stateCollisions = loadCollisionEntities(animationDescription.state.collisions);
+  }
+
+  const stateCollisionDescriptions = animationDescription.state.transitions.collisions;
+  let stateCollisionTransitions:CollisionTransition[] = [];
+  if (stateCollisionDescriptions) {
+    stateCollisionTransitions = getStateCollisionTransitions(stateCollisionDescriptions);
+  }
+
+  return {
+    id,
+    frameInfo: {
+      frameIndex: frameIndex + 1,
+      numFrames: animationDescription.numFrames,
+      stateID: animationDescription.id,
+    },
+    interactions: getStateInteractions(animationDescription),
+    transitions: {
+      default: defaultNextState,
+      controls: controlsTransitions,
+      collisions: stateCollisionTransitions,
+    },
+    effects: animationDescription.state.effects,
+    collisions: stateCollisions,
+  };
+}
+
 function getAnimationStates(animationDescription: FileAnimationDescription): AnimationState[] {
   const generatedStates:AnimationState[] = [];
   for (let i = 0; i < animationDescription.numFrames; i += 1) {
-    const id = getAnimationStateID(animationDescription.id, i);
-    const defaultNextState = resolveDefaultNextAnimation(
-      animationDescription.id,
-      i,
-      animationDescription.numFrames,
-      animationDescription.state.transitions.default,
-    );
-    const controlsTransitions = getStateControlsTransitions(
-      animationDescription,
-      i,
-    );
-
-    let stateCollisions;
-    if (animationDescription.state.collisions) {
-      stateCollisions = loadCollisionEntities(animationDescription.state.collisions);
-    }
-
-    const stateCollisionDescriptions = animationDescription.state.transitions.collisions;
-    let stateCollisionTransitions:CollisionTransition[] = [];
-    if (stateCollisionDescriptions) {
-      stateCollisionTransitions = getStateCollisionTransitions(stateCollisionDescriptions);
-    }
-
-    generatedStates.push({
-      id,
-      transitions: {
-        default: defaultNextState,
-        controls: controlsTransitions,
-        collisions: stateCollisionTransitions,
-      },
-      effects: animationDescription.state.effects,
-      collisions: stateCollisions,
-    });
+    generatedStates.push(getAnimationState(animationDescription, i));
   }
   return generatedStates;
 }

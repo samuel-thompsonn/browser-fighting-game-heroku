@@ -12,46 +12,129 @@
       "id": "idle",
       "numFrames": 60,
       "state": {
+        "interactions": [
+          {
+            "name": "default",
+            "priority": 1,
+            "conditions": [],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "idle"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "afterEnd"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "move left",
+            "priority": 25,
+            "conditions": [
+              {
+                "conditionType": "controls",
+                "args": [
+                  {
+                    "argName": "control",
+                    "value": "moveLeft"
+                  }
+                ]
+              }
+            ],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "left"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "interrupt"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "get hit",
+            "priority": 50,
+            "conditions": [
+              {
+                "conditionType": "collision",
+                "args": [
+                  {
+                    "argName": "selfEntity",
+                    "value": "hurtbox"
+                  },
+                  {
+                    "argName": "foreignEntity",
+                    "value": "hitbox"
+                  }
+                ]
+              }
+            ],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "knockback"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "interrupt"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "attack left",
+            "priority": 30,
+            "conditions": [
+              {
+                "conditionType": "controls",
+                "args": [
+                  {
+                    "argName": "control",
+                    "value": "lightAttack"
+                  }
+                ]
+              }
+            ],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "attackLeft"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "interrupt"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         "transitions": {
           "default": {
             "destination": "idle",
             "transitionType": "afterEnd"
           },
-          "controls": [
-            {
-              "control": "moveLeft",
-              "destination": "left"
-            },
-            {
-              "control": "lightAttack",
-              "destination": "attackLeft"
-            },
-            {
-              "control": "moveRight",
-              "destination": "right"
-            }
-          ],
-          "collisions": [
-            {
-              "foreignEntityType": "hitbox",
-              "selfEntityType": "hurtbox",
-              "destination": "knockback",
-              "effects": [
-                {
-                  "effectType": "knockback",
-                  "argumentLabels": [
-                    "knockback"
-                  ]
-                },
-                {
-                  "effectType": "damage",
-                  "argumentLabels": [
-                    "damage"
-                  ]
-                }
-              ]
-            }
-          ]
+          "controls": [],
+          "collisions": []
         },
         "collisions": [
           {

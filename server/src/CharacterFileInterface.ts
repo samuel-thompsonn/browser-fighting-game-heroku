@@ -1,5 +1,6 @@
 import CollisionEntity from './CollisionEntity';
 import CollisionTransition from './CollisionTransition';
+import StateInteraction from './state_interaction/StateInteraction';
 
 export interface CharacterDimensions {
   width: number;
@@ -21,6 +22,12 @@ export interface HitboxRectangle {
 
 export interface AnimationState {
   id: string;
+  frameInfo: {
+    frameIndex: number;
+    numFrames: number;
+    stateID: string;
+  }
+  interactions?: StateInteraction[];
   transitions: {
     default: string;
     controls: Map<string, string>;
@@ -65,36 +72,26 @@ export interface CollisionTransitionDescription {
   effects: TransitionEffectDescription[];
 }
 
-export interface FileAnimationState {
-  id: string;
-  transitions: {
-    default: string;
-    controls?: ControlsTransition[]
-    // Should have other transitions based on inputs
-    collisions?: CollisionTransitionDescription[]
-  };
-  collisions?: FileCollisionItem[];
-  effects?: {
-    move?: { // x and y movement are proportional to movementSpeed stat
-      x: number;
-      y: number;
-    }
-  }
-  // Should also have a hitbox and hurtbox set
+interface InteractionArgumentDescription {
+  argName: string;
+  value: string;
 }
 
-export interface CharacterFileData {
+export interface InteractionConditionDescription {
+  conditionType: string;
+  args: InteractionArgumentDescription[];
+}
+
+export interface InteractionEffectDescription {
+  effectType: string;
+  args: InteractionArgumentDescription[];
+}
+
+export interface StateInteractionDescription {
   name: string;
-  initialState: string;
-  stats: {
-    movementSpeed: number; // Units per second
-    maxHealth: number;
-    knockbackStrength: number;
-  }
-  animations: {
-      name: string;
-      states: FileAnimationState[];
-  }[]
+  priority: number;
+  conditions: InteractionConditionDescription[];
+  effects: InteractionEffectDescription[];
 }
 
 export interface FileAnimationDescription {
@@ -102,6 +99,7 @@ export interface FileAnimationDescription {
   id: string;
   numFrames: number;
   state: {
+    interactions?: StateInteractionDescription[];
     transitions: {
       default: {
         destination: string;

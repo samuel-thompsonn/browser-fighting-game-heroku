@@ -14,6 +14,11 @@ import controlsLabels from './controls/ControlsLabels.json';
 import { CollisionEvent } from './GameInterfaces';
 import GameInternal from './GameInternal';
 import CharacterInternal from './CharacterInternal';
+import InteractionInfo from './state_interaction/InteractionInfo';
+
+function getAnimationStateID(animationName: string, orderIndex: number) {
+  return `${animationName}${orderIndex + 1}`;
+}
 
 const CHARACTER_SIZE = 64;
 
@@ -136,6 +141,22 @@ export default class Character implements CharacterInternal {
     });
   }
 
+  #handleInteractions() {
+    const resolvedCollisions = [];
+    if (this.#currentCollision) {
+      resolvedCollisions.push(this.#currentCollision);
+    }
+    const interactionInfo:InteractionInfo = {
+      characterID: this.#characterID,
+      controlsMap: this.#controlsMap,
+      currentCollisions: resolvedCollisions,
+    };
+    this.#currentState.interactions?.forEach((interaction) => {
+      interaction.execute(this, interactionInfo);
+    });
+    this.#currentCollision = undefined;
+  }
+
   updateSelf(
     gameInterface: GameInternal,
     relevantInfo: TransitionInfo,
@@ -155,6 +176,7 @@ export default class Character implements CharacterInternal {
       x: 0,
       y: 0,
     };
+
     this.#nextStateID = this.#currentState.transitions.default;
     controlsLabels.forEach((controlID) => {
       if (this.#controlsMap.get(controlID) === true) {
@@ -165,7 +187,8 @@ export default class Character implements CharacterInternal {
         }
       }
     });
-    this.#handlePendingCollision();
+    this.#handleInteractions();
+    // this.#handlePendingCollision();
     if (!this.#nextStateID) { return; }
     this.#setState(this.#nextStateID);
   }
@@ -175,8 +198,37 @@ export default class Character implements CharacterInternal {
     this.#notifyListener(listener);
   }
 
-  setNextState(stateID: string) {
-    this.#nextStateID = stateID;
+  #getNextStateIDInterrupt(destinationStateID: string): string {
+    const currentStateID = this.#currentState.frameInfo.stateID;
+    const currentFrameIndex = this.#currentState.frameInfo.frameIndex;
+    const currentStateNumFrames = this.#currentState.frameInfo.numFrames;
+    if (currentStateID === destinationStateID) {
+      return getAnimationStateID(currentStateID, (currentFrameIndex + 1) % currentStateNumFrames);
+    }
+    return getAnimationStateID(destinationStateID, 0);
+  }
+
+  #getNextStateIDAfterEnd(destinationStateID: string): string {
+    const currentStateID = this.#currentState.frameInfo.stateID;
+    const currentFrameIndex = this.#currentState.frameInfo.frameIndex;
+    const currentStateNumFrames = this.#currentState.frameInfo.numFrames;
+    if (currentFrameIndex === currentStateNumFrames - 1) {
+      return getAnimationStateID(destinationStateID, 0);
+    }
+    return getAnimationStateID(currentStateID, currentFrameIndex + 1);
+  }
+
+  setNextState(stateID: string, resolutionType = 'direct') {
+    switch (resolutionType) {
+      case 'interrupt':
+        this.#nextStateID = this.#getNextStateIDInterrupt(stateID);
+        break;
+      case 'afterEnd':
+        this.#nextStateID = this.#getNextStateIDAfterEnd(stateID);
+        break;
+      default:
+        this.#nextStateID = stateID;
+    }
   }
 
   #setState(newStateID:string) {
