@@ -60,6 +60,8 @@ class Visualizer {
     if (nextState) {
       this.currentState = nextState;
       this.currentState.collisionData = collisionInfo;
+    } else {
+      throw new Error(`Server referenced unknown animation state ${newState}`);
     }
   }
 
