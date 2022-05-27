@@ -28,11 +28,6 @@ export interface AnimationState {
     stateID: string;
   }
   interactions?: StateInteraction[];
-  transitions: {
-    default: string;
-    controls: Map<string, string>;
-    collisions: CollisionTransition[];
-  }
   effects?: {
     move?: { // x and y movement are proportional to movementSpeed stat
       x: number;
@@ -72,9 +67,10 @@ export interface CollisionTransitionDescription {
   effects: TransitionEffectDescription[];
 }
 
-interface InteractionArgumentDescription {
+export interface InteractionArgumentDescription {
   argName: string;
   value: string;
+  valueType?: string;
 }
 
 export interface InteractionConditionDescription {

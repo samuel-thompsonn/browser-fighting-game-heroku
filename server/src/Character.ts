@@ -10,7 +10,6 @@ import {
 } from './CharacterFileInterface';
 import { ResolvedCollisionEvent } from './CharacterDataInterfaces';
 import CharacterListener from './CharacterListener';
-import controlsLabels from './controls/ControlsLabels.json';
 import { CollisionEvent } from './GameInterfaces';
 import GameInternal from './GameInternal';
 import CharacterInternal from './CharacterInternal';
@@ -124,21 +123,8 @@ export default class Character implements CharacterInternal {
     this.#healthInfo.health = newHealth;
   }
 
-  #handlePendingCollision(): void {
-    if (this.#currentCollision) {
-      this.#consumeCollision(this.#currentCollision);
-      this.#currentCollision = undefined;
-    }
-  }
-
   getKnockbackStrength() {
     return this.#knockbackStrength;
-  }
-
-  #consumeCollision(collision: ResolvedCollisionEvent): void {
-    this.#currentState.transitions.collisions.forEach((collisionTransition) => {
-      collisionTransition.handleCollision(collision, this);
-    });
   }
 
   #handleInteractions() {
@@ -176,19 +162,7 @@ export default class Character implements CharacterInternal {
       x: 0,
       y: 0,
     };
-
-    this.#nextStateID = this.#currentState.transitions.default;
-    controlsLabels.forEach((controlID) => {
-      if (this.#controlsMap.get(controlID) === true) {
-        const controlTransitions = this.#currentState.transitions.controls;
-        const destination = controlTransitions.get(controlID);
-        if (destination) {
-          this.#nextStateID = destination;
-        }
-      }
-    });
     this.#handleInteractions();
-    // this.#handlePendingCollision();
     if (!this.#nextStateID) { return; }
     this.#setState(this.#nextStateID);
   }
@@ -233,7 +207,9 @@ export default class Character implements CharacterInternal {
 
   #setState(newStateID:string) {
     const nextState = this.#animationStates.get(newStateID);
-    if (!nextState) { return; }
+    if (!nextState) {
+      throw new Error(`Attempted to transition to undefined state ${newStateID}.`);
+    }
     this.#currentState = nextState;
     this.#notifyListeners();
   }

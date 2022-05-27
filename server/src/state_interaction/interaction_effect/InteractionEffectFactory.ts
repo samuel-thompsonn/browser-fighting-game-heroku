@@ -1,12 +1,14 @@
-import { InteractionEffectDescription } from '../../CharacterFileInterface';
+import { InteractionArgumentDescription, InteractionEffectDescription } from '../../CharacterFileInterface';
 import InteractionEffect from './InteractionEffect';
 import interactionEffectNicknames from './interactionEffectTypes.json';
 import * as interactionEffectClasses from './InteractionEffectList';
 
-function getEffectArgs(description: InteractionEffectDescription): Map<string, string> {
-  const argMap = new Map<string, string>();
+function getEffectArgs(
+  description: InteractionEffectDescription,
+): Map<string, InteractionArgumentDescription> {
+  const argMap = new Map<string, InteractionArgumentDescription>();
   description.args.forEach((argDescription) => {
-    argMap.set(argDescription.argName, argDescription.value);
+    argMap.set(argDescription.argName, argDescription);
   });
   return argMap;
 }

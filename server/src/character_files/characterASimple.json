@@ -1,15 +1,15 @@
 {
   "name": "Character A",
-  "initialState": "idle",
+  "initialState": "idleLeft",
   "stats": {
-    "movementSpeed": 50,
+    "movementSpeed": 100,
     "maxHealth": 100,
     "knockbackStrength": 50
   },
   "interactions": [
     {
-      "name": "default to idle after this animation finishes",
-      "id": "defaultToIdle",
+      "name": "default to idle left after this animation finishes",
+      "id": "defaultToIdleLeft",
       "priority": 1,
       "conditions": [],
       "effects": [
@@ -18,11 +18,243 @@
           "args": [
             {
               "argName": "destination",
-              "value": "idle"
+              "value": "idleLeft"
             },
             {
               "argName": "resolutionType",
               "value": "afterEnd"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default to idle left if this animation is not sustained",
+      "id": "interruptToIdleLeft",
+      "priority": 1,
+      "conditions": [],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "idleLeft"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default to idle right after this animation finishes",
+      "id": "defaultToIdleRight",
+      "priority": 1,
+      "conditions": [],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "idleRight"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "afterEnd"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default to idle right if this animation is not sustained actively",
+      "id": "interruptToIdleRight",
+      "priority": 1,
+      "conditions": [],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "idleRight"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "take stun knockback when hit",
+      "id": "vulnerableToHit",
+      "priority": 100,
+      "conditions": [
+        {
+          "conditionType": "collision",
+          "args": [
+            {
+              "argName": "selfEntity",
+              "value": "hurtbox"
+            },
+            {
+              "argName": "foreignEntity",
+              "value": "hitbox"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "knockback"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        },
+        {
+          "effectType": "knockback",
+          "args": [
+            {
+              "argName": "knockback",
+              "value": "knockback",
+              "valueType": "fromContext"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "move right",
+      "id": "moveRight",
+      "priority": 25,
+      "conditions": [
+        {
+          "conditionType": "controls",
+          "args": [
+            {
+              "argName": "control",
+              "value": "moveRight"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "right"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "move left",
+      "id": "moveLeft",
+      "priority": 25,
+      "conditions": [
+        {
+          "conditionType": "controls",
+          "args": [
+            {
+              "argName": "control",
+              "value": "moveLeft"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "left"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "attack to the right when pressing lightAttack",
+      "id": "attackRight",
+      "priority": 30,
+      "conditions": [
+        {
+          "conditionType": "controls",
+          "args": [
+            {
+              "argName": "control",
+              "value": "lightAttack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "attackRight"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "attack to the left when pressing lightAttack",
+      "id": "attackLeft",
+      "priority": 30,
+      "conditions": [
+        {
+          "conditionType": "controls",
+          "args": [
+            {
+              "argName": "control",
+              "value": "lightAttack"
+            }
+          ]
+        }
+      ],
+      "effects": [
+        {
+          "effectType": "setNextState",
+          "args": [
+            {
+              "argName": "destination",
+              "value": "attackLeft"
+            },
+            {
+              "argName": "resolutionType",
+              "value": "interrupt"
             }
           ]
         }
@@ -32,124 +264,35 @@
   "animations": [
     {
       "name": "idle facing left",
-      "id": "idle",
+      "id": "idleLeft",
       "numFrames": 60,
       "state": {
         "importedInteractions": [
           {
-            "id": "defaultToIdle",
+            "id": "defaultToIdleLeft",
             "priority": 1
-          }
-        ],
-        "interactions": [
-          {
-            "name": "move left",
-            "priority": 25,
-            "conditions": [
-              {
-                "conditionType": "controls",
-                "args": [
-                  {
-                    "argName": "control",
-                    "value": "moveLeft"
-                  }
-                ]
-              }
-            ],
-            "effects": [
-              {
-                "effectType": "setNextState",
-                "args": [
-                  {
-                    "argName": "destination",
-                    "value": "left"
-                  },
-                  {
-                    "argName": "resolutionType",
-                    "value": "interrupt"
-                  }
-                ]
-              }
-            ]
           },
           {
-            "name": "get hit",
-            "priority": 50,
-            "conditions": [
-              {
-                "conditionType": "collision",
-                "args": [
-                  {
-                    "argName": "selfEntity",
-                    "value": "hurtbox"
-                  },
-                  {
-                    "argName": "foreignEntity",
-                    "value": "hitbox"
-                  }
-                ]
-              }
-            ],
-            "effects": [
-              {
-                "effectType": "setNextState",
-                "args": [
-                  {
-                    "argName": "destination",
-                    "value": "knockback"
-                  },
-                  {
-                    "argName": "resolutionType",
-                    "value": "interrupt"
-                  }
-                ]
-              },
-              {
-                "effectType": "knockback",
-                "args": [
-                  {
-                    "argName": "knockback",
-                    "value": "knockback",
-                    "valueType": "fromContext"
-                  }
-                ]
-              }
-            ]
+            "id": "vulnerableToHit",
+            "priority": 100
           },
           {
-            "name": "attack left",
-            "priority": 30,
-            "conditions": [
-              {
-                "conditionType": "controls",
-                "args": [
-                  {
-                    "argName": "control",
-                    "value": "lightAttack"
-                  }
-                ]
-              }
-            ],
-            "effects": [
-              {
-                "effectType": "setNextState",
-                "args": [
-                  {
-                    "argName": "destination",
-                    "value": "attackLeft"
-                  },
-                  {
-                    "argName": "resolutionType",
-                    "value": "interrupt"
-                  }
-                ]
-              }
-            ]
+            "id": "moveLeft",
+            "priority": 23
+          },
+          {
+            "id": "moveRight",
+            "priority": 24
+          },
+          {
+            "id": "attackLeft",
+            "priority": 30
           }
         ],
+        "interactions": [],
         "transitions": {
           "default": {
-            "destination": "idle",
+            "destination": "idleLeft",
             "transitionType": "afterEnd"
           },
           "controls": [],
@@ -175,46 +318,36 @@
       "id": "idleRight",
       "numFrames": 60,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          },
+          {
+            "id": "moveRight",
+            "priority": 25
+          },
+          {
+            "id": "moveLeft",
+            "priority": 24
+          },
+          {
+            "id": "attackRight",
+            "priority": 35
+          },
+          {
+            "id": "defaultToIdleRight",
+            "priority": 10
+          }
+        ],
+        "interactions": [],
         "transitions": {
           "default": {
-            "destination": "idle",
+            "destination": "idleLeft",
             "transitionType": "afterEnd"
           },
-          "controls": [
-            {
-              "control": "moveLeft",
-              "destination": "left"
-            },
-            {
-              "control": "lightAttack",
-              "destination": "attackRight"
-            },
-            {
-              "control": "moveRight",
-              "destination": "right"
-            }
-          ],
-          "collisions": [
-            {
-              "foreignEntityType": "hitbox",
-              "selfEntityType": "hurtbox",
-              "destination": "knockback",
-              "effects": [
-                {
-                  "effectType": "knockback",
-                  "argumentLabels": [
-                    "knockback"
-                  ]
-                },
-                {
-                  "effectType": "damage",
-                  "argumentLabels": [
-                    "damage"
-                  ]
-                }
-              ]
-            }
-          ]
+          "controls": [],
+          "collisions": []
         },
         "collisions": [
           {
@@ -236,21 +369,30 @@
       "id": "left",
       "numFrames": 4,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "interruptToIdleLeft",
+            "priority": 10
+          },
+          {
+            "id": "moveLeft",
+            "priority": 20
+          },
+          {
+            "id": "attackLeft",
+            "priority": 30
+          },
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
         "transitions": {
           "default": {
-            "destination": "idle",
+            "destination": "idleLeft",
             "transitionType": "interrupt"
           },
-          "controls": [
-            {
-              "control": "moveLeft",
-              "destination": "left"
-            },
-            {
-              "control": "lightAttack",
-              "destination": "attackLeft"
-            }
-          ]
+          "controls": []
         },
         "collisions": [
           {
@@ -278,25 +420,30 @@
       "id": "right",
       "numFrames": 4,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "interruptToIdleRight",
+            "priority": 10
+          },
+          {
+            "id": "moveRight",
+            "priority": 20
+          },
+          {
+            "id": "attackRight",
+            "priority": 30
+          },
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
         "transitions": {
           "default": {
             "destination": "idleRight",
             "transitionType": "interrupt"
           },
-          "controls": [
-            {
-              "control": "moveRight",
-              "destination": "right"
-            },
-            {
-              "control": "moveLeft",
-              "destination": "left"
-            },
-            {
-              "control": "lightAttack",
-              "destination": "attackRight"
-            }
-          ]
+          "controls": []
         },
         "collisions": [
           {
@@ -324,17 +471,22 @@
       "id": "attackLeft",
       "numFrames": 2,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "defaultToIdleLeft",
+            "priority": 10
+          },
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
         "transitions": {
           "default": {
-            "destination": "idle",
+            "destination": "idleLeft",
             "transitionType": "afterEnd"
           },
-          "controls": [
-            {
-              "control": "lightAttack",
-              "destination": "attackLeft"
-            }
-          ]
+          "controls": []
         },
         "collisions": [
           {
@@ -377,17 +529,22 @@
       "id": "attackRight",
       "numFrames": 2,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "defaultToIdleRight",
+            "priority": 10
+          },
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
         "transitions": {
           "default": {
             "destination": "idleRight",
             "transitionType": "afterEnd"
           },
-          "controls": [
-            {
-              "control": "lightAttack",
-              "destination": "attackRight"
-            }
-          ]
+          "controls": []
         },
         "collisions": [
           {
@@ -428,11 +585,17 @@
     {
       "name": "knocked back",
       "id": "knockback",
-      "numFrames": 30,
+      "numFrames": 15,
       "state": {
+        "importedInteractions": [
+          {
+            "id": "defaultToIdleLeft",
+            "priority": 10
+          }
+        ],
         "transitions": {
           "default": {
-            "destination": "idle",
+            "destination": "idleLeft",
             "transitionType": "afterEnd"
           }
         }

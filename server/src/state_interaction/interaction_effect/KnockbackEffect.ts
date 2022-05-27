@@ -1,17 +1,19 @@
+import { InteractionArgumentDescription } from '../../CharacterFileInterface';
 import CharacterInternal from '../../CharacterInternal';
 import InteractionContext from '../interaction_data_library/InteractionLibrary';
 import InteractionEffect from './InteractionEffect';
 
 const DEFAULT_KNOCKBACK_STRENGTH = 20;
 
+// DUPLICATED CODE!
 function resolveArgument(
-  effectArgs: Map<string, string>,
+  effectArgs: Map<string, InteractionArgumentDescription>,
   argName: string,
   defaultValue: string | undefined = undefined,
 ): string {
-  const argValue = effectArgs.get(argName);
-  if (argValue) {
-    return argValue;
+  const argDescription = effectArgs.get(argName);
+  if (argDescription) {
+    return argDescription.value;
   }
   if (defaultValue) {
     return defaultValue;
@@ -22,7 +24,7 @@ function resolveArgument(
 export default class KnockbackEffect implements InteractionEffect {
   #knockback: string;
 
-  constructor(effectArgs: Map<string, string>) {
+  constructor(effectArgs: Map<string, InteractionArgumentDescription>) {
     this.#knockback = resolveArgument(effectArgs, 'knockback');
   }
 

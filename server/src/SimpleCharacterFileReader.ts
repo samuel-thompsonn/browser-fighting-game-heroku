@@ -1,112 +1,17 @@
 import { Position } from './AnimationUtil';
-import BasicCollisionTransition from './BasicCollisionTransition';
 import Character from './Character';
 import {
   AnimationState,
   FileAnimationDescription,
   SimpleCharacterFileData,
-  ControlsTransition,
   FileCollisionItem,
-  CollisionTransitionDescription,
   StateInteractionDescription,
 } from './CharacterFileInterface';
 import CollisionEntity from './CollisionEntity';
-import CollisionTransition from './CollisionTransition';
 import StateInteraction from './state_interaction/StateInteraction';
 
 function getAnimationStateID(animationName: string, orderIndex: number) {
   return `${animationName}${orderIndex + 1}`;
-}
-
-function defaultNextStateInterrupt(
-  currentStateID: string,
-  currentStateIndex: number,
-  currentStateNumFrames: number,
-  destinationState: string,
-): string {
-  if (currentStateIndex === currentStateNumFrames - 1) {
-    return getAnimationStateID(destinationState, 0);
-  }
-  if (currentStateID === destinationState) {
-    return getAnimationStateID(currentStateID, currentStateIndex + 1);
-  }
-  return getAnimationStateID(destinationState, 0);
-}
-
-function defaultNextStateAfterEnd(
-  currentStateID: string,
-  currentStateIndex: number,
-  currentStateNumFrames: number,
-  destinationState: string,
-): string {
-  if (currentStateIndex === currentStateNumFrames - 1) {
-    return getAnimationStateID(destinationState, 0);
-  }
-  return getAnimationStateID(currentStateID, currentStateIndex + 1);
-}
-
-function resolveDefaultNextAnimation(
-  currentStateID: string,
-  currentStateIndex: number,
-  currentStateNumFrames: number,
-  defaultNextStateInfo: {
-    destination: string;
-    transitionType: string;
-  },
-): string {
-  if (defaultNextStateInfo.transitionType === 'interrupt') {
-    return defaultNextStateInterrupt(
-      currentStateID,
-      currentStateIndex,
-      currentStateNumFrames,
-      defaultNextStateInfo.destination,
-    );
-  }
-  if (defaultNextStateInfo.transitionType === 'afterEnd') {
-    return defaultNextStateAfterEnd(
-      currentStateID,
-      currentStateIndex,
-      currentStateNumFrames,
-      defaultNextStateInfo.destination,
-    );
-  }
-  return getAnimationStateID(defaultNextStateInfo.destination, 0);
-}
-
-function resolveDestinationStateID(
-  currentStateID: string,
-  currentStateIndex: number,
-  currentStateNumFrames: number,
-  destinationStateID: string,
-): string {
-  if (currentStateID === destinationStateID) {
-    return getAnimationStateID(currentStateID, (currentStateIndex + 1) % currentStateNumFrames);
-  }
-  return getAnimationStateID(destinationStateID, 0);
-}
-
-function getStateControlsTransitions(
-  animationDescription: FileAnimationDescription,
-  stateIndex: number,
-): Map<string, string> {
-  const fileDescription = animationDescription.state.transitions.controls;
-  if (!fileDescription) {
-    return new Map<string, string>();
-  }
-  const returnedTransitions = new Map<string, string>();
-  fileDescription.forEach((controlsTransition: ControlsTransition) => {
-    returnedTransitions.set(
-      controlsTransition.control,
-      resolveDestinationStateID(
-        animationDescription.id,
-        stateIndex,
-
-        animationDescription.numFrames,
-        controlsTransition.destination,
-      ),
-    );
-  });
-  return returnedTransitions;
 }
 
 function loadCollisionEntities(collisionData: FileCollisionItem[]): CollisionEntity[] {
@@ -123,16 +28,6 @@ function loadCollisionEntities(collisionData: FileCollisionItem[]): CollisionEnt
     ));
   });
   return collisionEntities;
-}
-
-function getStateCollisionTransitions(
-  collisionTransitionData: CollisionTransitionDescription[],
-): CollisionTransition[] {
-  const collisionTransitions: CollisionTransition[] = [];
-  collisionTransitionData.forEach((transitionDescription) => {
-    collisionTransitions.push(new BasicCollisionTransition(transitionDescription));
-  });
-  return collisionTransitions;
 }
 
 function getStateInteractions(
@@ -179,26 +74,10 @@ function getAnimationState(
   globalInteractionsMap: Map<string, StateInteractionDescription>,
 ): AnimationState {
   const id = getAnimationStateID(animationDescription.id, frameIndex);
-  const defaultNextState = resolveDefaultNextAnimation(
-    animationDescription.id,
-    frameIndex,
-    animationDescription.numFrames,
-    animationDescription.state.transitions.default,
-  );
-  const controlsTransitions = getStateControlsTransitions(
-    animationDescription,
-    frameIndex,
-  );
 
   let stateCollisions;
   if (animationDescription.state.collisions) {
     stateCollisions = loadCollisionEntities(animationDescription.state.collisions);
-  }
-
-  const stateCollisionDescriptions = animationDescription.state.transitions.collisions;
-  let stateCollisionTransitions:CollisionTransition[] = [];
-  if (stateCollisionDescriptions) {
-    stateCollisionTransitions = getStateCollisionTransitions(stateCollisionDescriptions);
   }
 
   const stateInteractions = getStateInteractions(animationDescription, globalInteractionsMap);
@@ -206,16 +85,11 @@ function getAnimationState(
   return {
     id,
     frameInfo: {
-      frameIndex: frameIndex + 1,
+      frameIndex,
       numFrames: animationDescription.numFrames,
       stateID: animationDescription.id,
     },
     interactions: stateInteractions,
-    transitions: {
-      default: defaultNextState,
-      controls: controlsTransitions,
-      collisions: stateCollisionTransitions,
-    },
     effects: animationDescription.state.effects,
     collisions: stateCollisions,
   };
