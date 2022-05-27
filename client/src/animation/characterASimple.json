@@ -1,6 +1,6 @@
 [
   {
-    "id": "idle",
+    "id": "idleLeft",
     "numFrames": 60,
     "filePath": "characterASpriteSheet.jpg",
     "offset": {
@@ -17,16 +17,16 @@
   {
     "id": "idleRight",
     "numFrames": 60,
-    "filePath": "characterASpriteSheet.jpg",
+    "filePath": "ryu_sprite_sheet.jpg",
     "offset": {
       "x": 0,
-      "y": 396
+      "y": 10
     },
     "frameSize": {
-      "width": 64,
-      "height": 64
+      "width": 34,
+      "height": 58
     },
-    "stride": 66,
+    "stride": 34,
     "statesPerFrame": 15
   },
   {
