@@ -219,7 +219,7 @@
           "args": [
             {
               "argName": "destination",
-              "value": "attackRight"
+              "value": "attackRightStartup"
             },
             {
               "argName": "resolutionType",
@@ -250,7 +250,7 @@
           "args": [
             {
               "argName": "destination",
-              "value": "attackLeft"
+              "value": "attackLeftStartup"
             },
             {
               "argName": "resolutionType",
@@ -265,7 +265,7 @@
     {
       "name": "idle facing left",
       "id": "idleLeft",
-      "numFrames": 60,
+      "numFrames": 16,
       "state": {
         "importedInteractions": [
           {
@@ -290,14 +290,6 @@
           }
         ],
         "interactions": [],
-        "transitions": {
-          "default": {
-            "destination": "idleLeft",
-            "transitionType": "afterEnd"
-          },
-          "controls": [],
-          "collisions": []
-        },
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -316,7 +308,7 @@
     {
       "name": "idle facing right",
       "id": "idleRight",
-      "numFrames": 60,
+      "numFrames": 16,
       "state": {
         "importedInteractions": [
           {
@@ -341,14 +333,6 @@
           }
         ],
         "interactions": [],
-        "transitions": {
-          "default": {
-            "destination": "idleLeft",
-            "transitionType": "afterEnd"
-          },
-          "controls": [],
-          "collisions": []
-        },
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -367,7 +351,7 @@
     {
       "name": "walk left",
       "id": "left",
-      "numFrames": 4,
+      "numFrames": 10,
       "state": {
         "importedInteractions": [
           {
@@ -387,13 +371,6 @@
             "priority": 100
           }
         ],
-        "transitions": {
-          "default": {
-            "destination": "idleLeft",
-            "transitionType": "interrupt"
-          },
-          "controls": []
-        },
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -418,7 +395,7 @@
     {
       "name": "walk right",
       "id": "right",
-      "numFrames": 4,
+      "numFrames": 10,
       "state": {
         "importedInteractions": [
           {
@@ -438,13 +415,6 @@
             "priority": 100
           }
         ],
-        "transitions": {
-          "default": {
-            "destination": "idleRight",
-            "transitionType": "interrupt"
-          },
-          "controls": []
-        },
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -467,27 +437,88 @@
       }
     },
     {
+      "name": "startup lag for attacking left",
+      "id": "attackLeftStartup",
+      "numFrames": 2,
+      "state": {
+        "importedInteractions": [
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
+        "interactions": [
+          {
+            "name": "switch to active attack Left immediately after this ends",
+            "id": "attackLeftAfterEnd",
+            "priority": 1,
+            "conditions": [],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "attackLeft"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "afterEnd"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "collisions": [
+          {
+            "entityType": "hurtbox",
+            "rectangles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 1.0,
+                "height": 1.0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "attack left",
       "id": "attackLeft",
       "numFrames": 2,
       "state": {
         "importedInteractions": [
           {
-            "id": "defaultToIdleLeft",
-            "priority": 10
-          },
-          {
             "id": "vulnerableToHit",
             "priority": 100
           }
         ],
-        "transitions": {
-          "default": {
-            "destination": "idleLeft",
-            "transitionType": "afterEnd"
-          },
-          "controls": []
-        },
+        "interactions": [
+          {
+            "name": "switch to end lag Left immediately after this ends",
+            "id": "endLagLeftAfterEnd",
+            "priority": 1,
+            "conditions": [],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "attackLeftEndLag"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "afterEnd"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -525,27 +556,119 @@
       }
     },
     {
+      "name": "end lag for attacking left",
+      "id": "attackLeftEndLag",
+      "numFrames": 2,
+      "state": {
+        "importedInteractions": [
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          },
+          {
+            "id": "defaultToIdleLeft",
+            "priority": 10
+          }
+        ],
+        "interactions": [],
+        "collisions": [
+          {
+            "entityType": "hurtbox",
+            "rectangles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 1.0,
+                "height": 1.0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "startup lag for attacking right",
+      "id": "attackRightStartup",
+      "numFrames": 2,
+      "state": {
+        "importedInteractions": [
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          }
+        ],
+        "interactions": [
+          {
+            "name": "switch to active attack Right immediately after this ends",
+            "id": "attackRightAfterEnd",
+            "priority": 1,
+            "conditions": [],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "attackRight"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "afterEnd"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "collisions": [
+          {
+            "entityType": "hurtbox",
+            "rectangles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 1.0,
+                "height": 1.0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "attack right",
       "id": "attackRight",
       "numFrames": 2,
       "state": {
         "importedInteractions": [
           {
-            "id": "defaultToIdleRight",
-            "priority": 10
-          },
-          {
             "id": "vulnerableToHit",
             "priority": 100
           }
         ],
-        "transitions": {
-          "default": {
-            "destination": "idleRight",
-            "transitionType": "afterEnd"
-          },
-          "controls": []
-        },
+        "interactions": [
+          {
+            "name": "switch to end lag Right immediately after this ends",
+            "id": "endLagRightAfterEnd",
+            "priority": 1,
+            "conditions": [],
+            "effects": [
+              {
+                "effectType": "setNextState",
+                "args": [
+                  {
+                    "argName": "destination",
+                    "value": "attackRightEndLag"
+                  },
+                  {
+                    "argName": "resolutionType",
+                    "value": "afterEnd"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         "collisions": [
           {
             "entityType": "hurtbox",
@@ -576,6 +699,37 @@
                 "y": 0.25,
                 "width": 1.0,
                 "height": 0.5
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "end lag for attacking right",
+      "id": "attackRightEndLag",
+      "numFrames": 2,
+      "state": {
+        "importedInteractions": [
+          {
+            "id": "vulnerableToHit",
+            "priority": 100
+          },
+          {
+            "id": "defaultToIdleRight",
+            "priority": 10
+          }
+        ],
+        "interactions": [],
+        "collisions": [
+          {
+            "entityType": "hurtbox",
+            "rectangles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 1.0,
+                "height": 1.0
               }
             ]
           }
