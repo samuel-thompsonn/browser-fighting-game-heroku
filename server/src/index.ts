@@ -5,7 +5,7 @@ import path from 'path';
 import ClientHandler from './ClientHandler';
 import GameModel from './GameModel';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const SECONDS_PER_GAME_LOOP = 0.0333;
 
 const clientHandlers = new Map<string, ClientHandler>();
