@@ -1,5 +1,4 @@
 import CollisionEntity from './CollisionEntity';
-import CollisionTransition from './CollisionTransition';
 import StateInteraction from './state_interaction/StateInteraction';
 
 export interface CharacterDimensions {
@@ -103,14 +102,6 @@ export interface FileAnimationDescription {
   state: {
     importedInteractions?: ImportedInteractionDescription[];
     interactions?: StateInteractionDescription[];
-    transitions: {
-      default: {
-        destination: string;
-        transitionType: string;
-      };
-      controls?: ControlsTransition[];
-      collisions?: CollisionTransitionDescription[];
-    }
     effects?: {
       move?: { // x and y movement are proportional to movementSpeed stat
         x: number;
