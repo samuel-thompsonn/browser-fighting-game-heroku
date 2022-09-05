@@ -1,10 +1,11 @@
 import { io, Socket } from 'socket.io-client';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Canvas from './Canvas';
 import Visualizer from './Visualizer';
 import { CharacterUpdate, ControlsEventHandler } from './InterfaceUtils';
 import ControlsHandler from './ControlsHandler';
 import controlsMap from './ControlsMap.json';
+import "./App.css";
 
 function App() {
   const [visualizers] = useState<Map<string, Visualizer>>(
@@ -74,16 +75,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit
-          {' '}
-          <code>src/App.tsx</code>
-          {' '}
-          and save to reload.
-        </p>
+      <div className="Header-Container">
+        <h1>Browser fighting game</h1>
+      </div>
+      <div className="Canvas-Container">
         <Canvas visualizers={visualizers} />
-      </header>
+      </div>
     </div>
   );
 }

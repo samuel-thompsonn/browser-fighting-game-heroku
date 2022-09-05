@@ -1,4 +1,4 @@
-import animationData from './animation/characterASimple.json';
+import animationData from './animation/characterASimpleAnimations.json';
 import {
   Position, AnimationState, CollisionRectangle, CollisionDataItem,
 } from './InterfaceUtils';
