@@ -1,0 +1,22 @@
+.Interactions-Box {
+  height: 60%;
+  background-color: green;
+  display: flex;
+  flex-direction: column;
+}
+
+.Interactions-List {
+  background-color: red;
+  width: 30%;
+}
+
+.Interactions-Editor {
+  background-color: blue;
+  display: flex;
+  flex-direction: row;
+}
+
+.Condition-Effect-Editors {
+  display: flex;
+  flex-direction: column;
+}
