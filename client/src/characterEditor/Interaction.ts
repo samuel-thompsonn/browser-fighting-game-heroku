@@ -8,11 +8,17 @@ export interface Condition {
   args: InteractionArg[];
 };
 
+export interface Effect {
+  effectType: string;
+  args: InteractionArg[];
+}
+
 interface Interaction {
   name: string;
   id: string;
   priority: string;
   conditions: Condition[];
+  effects: Effect[];
 };
 
 export default Interaction;

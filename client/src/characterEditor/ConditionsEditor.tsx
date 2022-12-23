@@ -2,9 +2,11 @@ import { Condition } from "./Interaction";
 import ListSelect from "./ListSelect";
 import { useState } from 'react';
 import ConditionEditor from "./ConditionEditor";
+import Typography from '@mui/material/Typography';
 
 interface ConditionsEditorProps {
   conditions: Condition[];
+  onChange: (newValue: Condition, index: number) => void;
 }
 
 
@@ -14,7 +16,7 @@ function ConditionsEditor(props: ConditionsEditorProps) {
 
   return (
     <div>
-      <h3>Conditions</h3>
+      <Typography variant="h4">Conditions</Typography>
       <ListSelect
         interactions={props.conditions.map((condition) => condition.conditionType)}
         value={selectedCondition}
@@ -23,7 +25,8 @@ function ConditionsEditor(props: ConditionsEditorProps) {
       {
         props.conditions.length > 0 ?
         <ConditionEditor
-          {...props.conditions[selectedCondition]}
+          condition={props.conditions[selectedCondition]}
+          onChange={(newValue: Condition) => props.onChange(newValue, selectedCondition)}
         /> : null
       }
     </div>

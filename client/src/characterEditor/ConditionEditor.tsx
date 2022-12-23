@@ -1,17 +1,29 @@
 import { Condition, InteractionArg } from "./Interaction";
-import { ConditionInfo, ArgInfo, ConditionInfoData } from "./ConditionInfo";
+import { ConditionInfo, ArgInfo, ConditionInfoData } from "./InteractionEditorInfo";
 import conditionTypes from "./conditionTypes.json";
+import { ChangeEvent } from "react";
 
 function ConditionArgEditor(
   arg: InteractionArg,
-  argInfo: ArgInfo | undefined
+  argInfo: ArgInfo | undefined,
+  onChange: (newValue: InteractionArg) => void
 ) {
+
+  function handleNewArgValue(newArgValue: string) {
+    onChange({
+      argName: arg.argName,
+      value: newArgValue
+    });
+  }
+
   return (
     <div className="Condition-Description">
       {
         argInfo? <p>{argInfo.argDescription}</p> : arg.argName
       }
-      <input type="text" value={arg.value}/>
+      <input type="text" value={arg.value}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => handleNewArgValue(event.target.value)}
+      />
     </div>
   )
 }
@@ -39,16 +51,35 @@ function constructConditionTypesMap(conditionInfos: ConditionInfoData[]): Map<St
   return conditionTypeMap;
 }
 
-function ConditionEditor(condition: Condition) {
+interface ConditionEditorProps {
+  condition: Condition;
+  onChange: (newValue: Condition) => void;
+};
+
+function ConditionEditor(props: ConditionEditorProps) {
 
   const conditionInfoMap = constructConditionTypesMap(conditionTypes);
 
-  const currentConditionInfo = conditionInfoMap.get(condition.conditionType);
+  const currentConditionInfo = conditionInfoMap.get(props.condition.conditionType);
+
+  function handleNewConditionArg(newValue: InteractionArg, index: number) {
+    props.condition.args[index] = newValue;
+    props.onChange(props.condition);
+  }
 
   return (
     <div className="Condition-Item">
       <p>{currentConditionInfo? currentConditionInfo.conditionDescription : "(No description available)"}</p>
-      {condition.args.map((arg: InteractionArg) => ConditionArgEditor(arg, currentConditionInfo? currentConditionInfo.args.get(arg.argName) : undefined))}
+      {
+        props.condition.args.map((arg: InteractionArg, index: number) => (
+            ConditionArgEditor(
+              arg,
+              currentConditionInfo? currentConditionInfo.args.get(arg.argName) : undefined,
+              (newValue: InteractionArg) => handleNewConditionArg(newValue, index)
+            )
+          )
+        )
+      }
     </div>
   )
 }

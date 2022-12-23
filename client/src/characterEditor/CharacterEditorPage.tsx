@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Interaction from './Interaction';
 import InteractionsEditor from './InteractionsEditor';
-import StatsBox from './StatsBox';
+import StatsBox, { CharacterStats } from './StatsBox';
 
 interface CharacterData {
   name: string;
@@ -27,16 +27,36 @@ function EditorPage() {
     })
   }, []);
 
+  function downloadCharacterFile() {
+    const blob = new Blob([JSON.stringify(characterData)], { type: "application/json" });
+    const dummyLink = document.createElement('a');
+    dummyLink.download = "CharacterFile.json";
+    dummyLink.href = URL.createObjectURL(blob);
+    dummyLink.click();
+  }
+  
+
   function characterEditorInterface(characterData: CharacterData) {
+
+    function handleInteractionChange(newValue: Interaction, index: number) {
+      characterData.interactions[index] = newValue;
+      setCharacterData({...characterData});
+    }
+
     return (
       <div className="Character-Editor">
         <div className="Title-Box">
           <h1>{characterData? characterData.name : "Unknown"}</h1>
+          <button onClick={downloadCharacterFile}>Download</button>
         </div>
-        <StatsBox {...characterData.stats}/>
+        <StatsBox stats={characterData.stats} onChangeStats={(newValue: CharacterStats) => {
+          characterData.stats = newValue;
+          setCharacterData({...characterData});
+        }}/>
         <div className="Interactions-Box">
           <InteractionsEditor
             interactions={characterData.interactions}
+            onChange={handleInteractionChange}
           />
         </div>
         <div className="States-Box">
